@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    data: classpath:db/data-h2.sql
+    url: jdbc:mysql://localhost/workflow?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
