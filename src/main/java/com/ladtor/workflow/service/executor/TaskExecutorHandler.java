@@ -1,5 +1,6 @@
 package com.ladtor.workflow.service.executor;
 
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.TaskExecuteInfo;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +27,12 @@ class TaskExecutorHandler extends AbstractExecutorHandler<TaskExecuteInfo> {
     }
 
     @Override
-    protected void doSuccess(TaskExecuteInfo executeInfo) {
+    protected void doSuccess(ExecuteResult executeResult) {
 
     }
 
     @Override
-    protected void doFail(TaskExecuteInfo executeInfo) {
+    protected void doFail(ExecuteResult executeResult) {
 
     }
 

@@ -1,6 +1,7 @@
 package com.ladtor.workflow.service.executor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.StartExecuteInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class StartExecutorHandler extends AbstractExecutorHandler<StartExecuteIn
     @Autowired
     private Executor executor;
 
+
     public StartExecutorHandler() {
         super(NAME);
     }
@@ -28,19 +30,28 @@ public class StartExecutorHandler extends AbstractExecutorHandler<StartExecuteIn
     }
 
     @Override
+    protected void preExecute(StartExecuteInfo executeInfo) {
+        JSONObject params = executeInfo.getParams();
+        if (params == null) {
+            params = new JSONObject();
+        }
+        params.put("START_AT", new Date());
+        params.putAll(executeInfo.getInitParams());
+        executeInfo.setParams(params);
+    }
+
+    @Override
     protected void doExecute(StartExecuteInfo executeInfo) {
-        JSONObject result = executeInfo.getResult();
-        result.put("START_AT", new Date());
-        executor.success(executeInfo);
+        executor.success(buildExecuteResult(executeInfo, executeInfo.getParams()));
     }
 
     @Override
-    protected void doSuccess(StartExecuteInfo executeInfo) {
+    protected void doSuccess(ExecuteResult executeResult) {
 
     }
 
     @Override
-    protected void doFail(StartExecuteInfo executeInfo) {
+    protected void doFail(ExecuteResult executeResult) {
 
     }
 

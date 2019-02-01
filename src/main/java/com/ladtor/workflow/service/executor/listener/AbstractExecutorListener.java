@@ -1,6 +1,7 @@
 package com.ladtor.workflow.service.executor.listener;
 
 import com.ladtor.workflow.bo.execute.ExecuteInfo;
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 
 /**
  * @author liudongrong
@@ -13,17 +14,17 @@ public abstract class AbstractExecutorListener implements ExecutorListener {
     }
 
     @Override
-    public void complete(String executorName, ExecuteInfo executeInfo) {
+    public void complete(String executorName, ExecuteResult executeResult) {
 
     }
 
     @Override
-    public void success(String executorName, ExecuteInfo executeInfo) {
+    public void success(String executorName, ExecuteResult executeResult) {
 
     }
 
     @Override
-    public void fail(String executorName, ExecuteInfo executeInfo) {
+    public void fail(String executorName, ExecuteResult executeResult) {
 
     }
 

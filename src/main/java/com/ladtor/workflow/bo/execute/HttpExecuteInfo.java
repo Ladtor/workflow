@@ -1,5 +1,6 @@
 package com.ladtor.workflow.bo.execute;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HttpExecuteInfo extends ExecuteInfo {
     private String url;
+    private String method;
+    private JSONObject requestParams;
 }

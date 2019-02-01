@@ -1,10 +1,8 @@
 package com.ladtor.workflow.bo.execute;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ladtor.workflow.bo.Node;
 import com.ladtor.workflow.constant.NodeType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class ExecuteInfo {
-    private String serialNo;
-    private Integer version;
-    private Integer runVersion;
+    private FourTuple fourTuple;
     private NodeType nodeType;
-    private Node node;
-    @Builder.Default
-    private JSONObject result = new JSONObject();
+    private JSONObject params;
+
+    public JSONObject getParams() {
+        if (params == null) {
+            params = new JSONObject();
+        }
+        return params;
+    }
 }

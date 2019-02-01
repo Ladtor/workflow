@@ -1,6 +1,7 @@
 package com.ladtor.workflow.bo.execute;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ladtor.workflow.constant.NodeType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExecuteResult extends JSONObject {
-    private String result;
+public class ExecuteResult{
+    private FourTuple fourTuple;
+    private NodeType nodeType;
+
+    @Builder.Default
+    private JSONObject result = new JSONObject();
 }

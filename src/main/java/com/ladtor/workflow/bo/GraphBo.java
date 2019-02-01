@@ -1,6 +1,8 @@
 package com.ladtor.workflow.bo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.ladtor.workflow.bo.execute.ExecuteInfo;
+import com.ladtor.workflow.bo.execute.ThreeTuple;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,12 +43,14 @@ public class GraphBo {
         return nodes.stream().filter(node -> node.getId().equals(edge.getTarget())).findFirst().orElse(null);
     }
 
+    @JSONField(serialize = false)
     public Node getStartNode() {
-        return nodes.stream().filter(node -> node.getId().equals(START_ID)).findFirst().orElse(null);
+        return getNode(START_ID);
     }
 
+    @JSONField(serialize = false)
     public Node getResultNode() {
-        return nodes.stream().filter(node -> node.getId().equals(RESULT_ID)).findFirst().orElse(null);
+        return getNode(RESULT_ID);
     }
 
     public List<Node> getTargetNodes(Node sourceNode) {
@@ -54,11 +58,10 @@ public class GraphBo {
     }
 
     public ExecuteInfo getExecuteInfo(Node node, Integer runVersion) {
-        ExecuteInfo executeInfo = node.getExecuteInfo(runVersion);
-        if (executeInfo != null) {
-            executeInfo.setSerialNo(serialNo);
-            executeInfo.setVersion(version);
-        }
-        return executeInfo;
+        return node.getExecuteInfo(new ThreeTuple(serialNo, version, runVersion));
+    }
+
+    public Node getNode(String nodeId) {
+        return nodes.stream().filter(node -> node.getId().equals(nodeId)).findFirst().orElse(null);
     }
 }

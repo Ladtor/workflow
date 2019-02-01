@@ -1,6 +1,5 @@
 package com.ladtor.workflow.bo.req;
 
-import com.ladtor.workflow.bo.GraphBo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +15,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WorkFlowReq {
     private String name;
-    private GraphBo graph;
+    private GraphReq graph;
 }

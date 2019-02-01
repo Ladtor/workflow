@@ -1,5 +1,6 @@
 package com.ladtor.workflow.service.executor;
 
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.OrExecuteInfo;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +23,16 @@ public class OrExecuteHandler extends AbstractExecutorHandler<OrExecuteInfo> {
 
     @Override
     protected void doExecute(OrExecuteInfo executeInfo) {
+        this.success(buildExecuteResult(executeInfo, executeInfo.getParams()));
+    }
+
+    @Override
+    protected void doSuccess(ExecuteResult executeResult) {
 
     }
 
     @Override
-    protected void doSuccess(OrExecuteInfo executeInfo) {
-
-    }
-
-    @Override
-    protected void doFail(OrExecuteInfo executeInfo) {
+    protected void doFail(ExecuteResult executeResult) {
 
     }
 

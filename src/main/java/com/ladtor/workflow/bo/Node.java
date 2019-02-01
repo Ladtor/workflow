@@ -1,12 +1,18 @@
 package com.ladtor.workflow.bo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ladtor.workflow.bo.domain.NodeLog;
 import com.ladtor.workflow.bo.execute.*;
 import com.ladtor.workflow.constant.NodeType;
+import com.ladtor.workflow.constant.StatusEnum;
+import com.ladtor.workflow.service.NodeLogService;
+import com.ladtor.workflow.util.BeanUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author liudongrong
@@ -23,8 +29,12 @@ public class Node {
     @Builder.Default
     private JSONObject extra = new JSONObject();
 
-    public ExecuteInfo getExecuteInfo(Integer runVersion) {
+    public ExecuteInfo getExecuteInfo(ThreeTuple threeTuple) {
         ExecuteInfo executeInfo = null;
+        if (extra == null) extra = new JSONObject();
+        extra.put("params", extra.getJSONObject("params"));
+        extra.put("initParams", extra.getJSONObject("initParams"));
+        extra.put("requestParams", extra.getJSONObject("requestParams"));
         switch (nodeType) {
             case START:
                 executeInfo = extra.toJavaObject(StartExecuteInfo.class);
@@ -41,16 +51,35 @@ public class Node {
             case WORK_FLOW:
                 executeInfo = extra.toJavaObject(WorkFlowExecuteInfo.class);
                 break;
+            case OR:
+                executeInfo = extra.toJavaObject(OrExecuteInfo.class);
+                break;
+            case AND:
+                executeInfo = extra.toJavaObject(AndExecuteInfo.class);
+                break;
         }
         if (executeInfo != null) {
-            executeInfo.setNodeType(nodeType);
-            executeInfo.setNode(this);
-            executeInfo.setRunVersion(runVersion);
+            executeInfo.setNodeType(this.getNodeType());
+            executeInfo.setFourTuple(new FourTuple(threeTuple, id));
         }
         return executeInfo;
     }
 
-    public boolean isReady(Integer runVersion) {
-        return true;
+    public boolean isReady(ThreeTuple threeTuple) {
+        NodeLogService nodeLogService = BeanUtil.getBean(NodeLogService.class);
+        NodeLog nodeLog = nodeLogService.get(new FourTuple(threeTuple, id));
+        if (nodeLog == null) {
+            return false;
+        }
+        return StatusEnum.SUCCESS.toString().equals(nodeLog.getStatus());
+    }
+
+    public JSONObject getExecuteResult(ThreeTuple threeTuple) {
+        NodeLogService nodeLogService = BeanUtil.getBean(NodeLogService.class);
+        NodeLog nodeLog = nodeLogService.get(new FourTuple(threeTuple, id));
+        if (nodeLog != null && StringUtils.isNotEmpty(nodeLog.getResult())) {
+            return JSON.parseObject(nodeLog.getResult());
+        }
+        return new JSONObject();
     }
 }

@@ -5,3 +5,12 @@ spring:
     url: jdbc:mysql://localhost/workflow?useUnicode=true&characterEncoding=utf8
     username: root
     password: root
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+
+logging:
+  level:
+    com.ladtor: debug

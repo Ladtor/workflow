@@ -1,10 +1,8 @@
 package com.ladtor.workflow.service.executor;
 
-import com.ladtor.workflow.bo.GraphBo;
-import com.ladtor.workflow.bo.Node;
-import com.ladtor.workflow.bo.WorkFlowBo;
+import com.alibaba.fastjson.JSONObject;
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.WorkFlowExecuteInfo;
-import com.ladtor.workflow.service.WorkFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 class WorkFlowExecutorHandler extends AbstractExecutorHandler<WorkFlowExecuteInfo> {
     private static final String NAME = "WORK_FLOW";
-
-    @Autowired
-    private WorkFlowService workFlowService;
 
     @Autowired
     private Executor executor;
@@ -31,23 +26,25 @@ class WorkFlowExecutorHandler extends AbstractExecutorHandler<WorkFlowExecuteInf
     }
 
     @Override
+    protected void preExecute(WorkFlowExecuteInfo executeInfo) {
+        super.preExecute(executeInfo);
+        JSONObject params = executeInfo.getParams();
+        params.put(Executor.PARENT_KEY, executeInfo.getFourTuple());
+    }
+
+    @Override
     protected void doExecute(WorkFlowExecuteInfo executeInfo) {
-        WorkFlowBo workFlow = workFlowService.getWorkFlow(executeInfo.getSerialNo(), executeInfo.getVersion());
-        GraphBo graph = workFlow.getGraph();
-        Node startNode = graph.getStartNode();
-
-        Integer runVersion = workFlow.createRunVersion();
-
-        executor.execute(graph.getExecuteInfo(startNode, runVersion));
+        String subSerialNo = executeInfo.getSubSerialNo();
+        executor.execute(subSerialNo, executeInfo.getParams());
     }
 
     @Override
-    protected void doSuccess(WorkFlowExecuteInfo executeInfo) {
+    protected void doSuccess(ExecuteResult executeResult) {
 
     }
 
     @Override
-    protected void doFail(WorkFlowExecuteInfo executeInfo) {
+    protected void doFail(ExecuteResult executeResult) {
 
     }
 

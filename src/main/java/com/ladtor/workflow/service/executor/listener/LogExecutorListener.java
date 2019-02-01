@@ -2,6 +2,7 @@ package com.ladtor.workflow.service.executor.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.ladtor.workflow.bo.execute.ExecuteInfo;
+import com.ladtor.workflow.bo.execute.ExecuteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +19,18 @@ public class LogExecutorListener implements ExecutorListener {
     }
 
     @Override
-    public void complete(String executorName, ExecuteInfo executeInfo) {
-        log.info("executor {} complete {} ", executorName, JSON.toJSONString(executeInfo));
+    public void complete(String executorName, ExecuteResult executeResult) {
+        log.info("executor {} complete {} ", executorName, JSON.toJSONString(executeResult));
     }
 
     @Override
-    public void success(String executorName, ExecuteInfo executeInfo) {
-        log.info("executor {} success {} ", executorName, JSON.toJSONString(executeInfo));
+    public void success(String executorName, ExecuteResult executeResult) {
+        log.info("executor {} success {} ", executorName, JSON.toJSONString(executeResult));
     }
 
     @Override
-    public void fail(String executorName, ExecuteInfo executeInfo) {
-        log.info("executor {} fail {} ", executorName, JSON.toJSONString(executeInfo));
+    public void fail(String executorName, ExecuteResult executeResult) {
+        log.info("executor {} fail {} ", executorName, JSON.toJSONString(executeResult));
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.ladtor.workflow.bo.resp;
 
-import com.ladtor.workflow.bo.GraphBo;
+import com.ladtor.workflow.bo.domain.EdgeLog;
+import com.ladtor.workflow.bo.domain.NodeLog;
+import com.ladtor.workflow.bo.req.GraphReq;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liudongrong
@@ -22,7 +25,9 @@ public class WorkFlowResp {
     private String serialNo;
     private Integer version;
     private Integer runVersion;
-    private GraphBo graph;
+    private GraphReq graph;
+    private List<NodeLog> nodeLogList;
+    private List<EdgeLog> edgeLogList;
 
     private Date createdAt;
     private Date updatedAt;

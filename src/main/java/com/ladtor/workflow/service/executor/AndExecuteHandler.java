@@ -1,15 +1,12 @@
 package com.ladtor.workflow.service.executor;
 
-import com.ladtor.workflow.bo.Edge;
-import com.ladtor.workflow.bo.GraphBo;
-import com.ladtor.workflow.bo.Node;
+import com.alibaba.fastjson.JSONObject;
 import com.ladtor.workflow.bo.WorkFlowBo;
 import com.ladtor.workflow.bo.execute.AndExecuteInfo;
-import com.ladtor.workflow.service.WorkFlowService;
+import com.ladtor.workflow.bo.execute.ExecuteResult;
+import com.ladtor.workflow.bo.execute.FourTuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author liudongrong
@@ -21,7 +18,6 @@ public class AndExecuteHandler extends AbstractExecutorHandler<AndExecuteInfo> {
     public static final String NAME = "AND";
 
     @Autowired
-    private WorkFlowService workFlowService;
     private Executor executor;
 
     public AndExecuteHandler() {
@@ -34,27 +30,21 @@ public class AndExecuteHandler extends AbstractExecutorHandler<AndExecuteInfo> {
 
     @Override
     protected void doExecute(AndExecuteInfo executeInfo) {
-        WorkFlowBo workFlow = workFlowService.getWorkFlow(executeInfo.getSerialNo(), executeInfo.getVersion());
-        GraphBo graph = workFlow.getGraph();
-        List<Edge> targetEdges = graph.getTargetEdges(executeInfo.getNode());
-        for (Edge targetEdge : targetEdges) {
-            Node sourceNode = graph.getSourceNode(targetEdge);
-            Integer runVersion = executeInfo.getRunVersion();
-            if(!(sourceNode.isReady(runVersion)
-                    && targetEdge.valid(sourceNode.getExecuteInfo(runVersion).getResult()))){
-                    return;
-            }
-        }
-        executor.success(executeInfo);
+        FourTuple fourTuple = executeInfo.getFourTuple();
+        WorkFlowBo workFlow = getWorkFlow(fourTuple);
+        if (!sourceSuccess(workFlow, fourTuple)) return;
+        JSONObject result = collectSourceResult(workFlow, fourTuple);
+        ExecuteResult executeResult = buildExecuteResult(executeInfo, result);
+        executor.success(executeResult);
     }
 
     @Override
-    protected void doSuccess(AndExecuteInfo executeInfo) {
+    protected void doSuccess(ExecuteResult executeResult) {
 
     }
 
     @Override
-    protected void doFail(AndExecuteInfo executeInfo) {
+    protected void doFail(ExecuteResult executeResult) {
 
     }
 

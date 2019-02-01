@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * @author liudongrong
- * @date 2019/1/13 21:00
+ * @date 2019/1/15 14:08
  */
 @Data
 @Builder
@@ -17,12 +17,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class ExecuteLog {
     private Integer id;
-    private Integer graphId;
     private String serialNo;
     private Integer version;
     private Integer runVersion;
-    private String target;
-    private String source;
     private String status;
     private String params;
     private String result;

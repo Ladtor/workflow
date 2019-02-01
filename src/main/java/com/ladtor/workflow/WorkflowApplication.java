@@ -1,11 +1,11 @@
 package com.ladtor.workflow;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
-@MapperScan("com.ladtor.workflow.mapper")
+@EnableCaching
 public class WorkflowApplication {
 
     public static void main(String[] args) {

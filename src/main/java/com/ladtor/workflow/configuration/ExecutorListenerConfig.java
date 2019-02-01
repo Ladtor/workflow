@@ -3,6 +3,7 @@ package com.ladtor.workflow.configuration;
 import com.ladtor.workflow.service.executor.listener.ExecutorListenerHandler;
 import com.ladtor.workflow.service.executor.listener.GraphExecutorListener;
 import com.ladtor.workflow.service.executor.listener.LogExecutorListener;
+import com.ladtor.workflow.service.executor.listener.ResultExecutorListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,10 +14,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExecutorListenerConfig {
     @Bean
-    public ExecutorListenerHandler executorListenerHandler(){
+    public ExecutorListenerHandler executorListenerHandler(LogExecutorListener logExecutorListener, GraphExecutorListener graphExecutorListener, ResultExecutorListener resultExecutorListener){
         ExecutorListenerHandler executorListenerHandler = new ExecutorListenerHandler();
-        executorListenerHandler.add(new LogExecutorListener());
-        executorListenerHandler.add(new GraphExecutorListener());
+        executorListenerHandler.add(logExecutorListener);
+        executorListenerHandler.add(resultExecutorListener);
+        executorListenerHandler.add(graphExecutorListener);
         return executorListenerHandler;
     }
 }

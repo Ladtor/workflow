@@ -1,6 +1,5 @@
 package com.ladtor.workflow.bo.execute;
 
-import com.ladtor.workflow.bo.trigger.TriggerInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +14,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkFlowExecuteInfo extends ExecuteInfo {
-    private TriggerInfo triggerInfo;
+    private String subSerialNo;
 }
