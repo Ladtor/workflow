@@ -29,7 +29,7 @@ public class NodeController {
     public void execute(@PathVariable String serialNo, @PathVariable Integer version, @PathVariable Integer runVersion, @PathVariable String nodeId, @RequestBody JSONObject params) {
         ExecuteInfo executeInfo = ExecutorFactory.getExecuteInfo(new FourTuple(serialNo, version, runVersion, nodeId));
         executeInfo.setParams(params);
-        executor.execute(executeInfo);
+        executor.execute(executeInfo, false);
     }
 
     @RequestMapping(value = "/success/{serialNo}/{version}/{runVersion}/{nodeId}", method = RequestMethod.POST)

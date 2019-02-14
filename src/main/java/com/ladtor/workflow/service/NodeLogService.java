@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -50,32 +51,12 @@ public class NodeLogService extends ServiceImpl<NodeLogMapper, NodeLog> {
                     @CacheEvict(cacheNames = "nodeLogList", key = "#fourTuple.serialNo + #fourTuple.version + #fourTuple.runVersion")
             }
     )
+    @Transactional
     public void saveOrUpdate(FourTuple fourTuple, StatusEnum status, JSONObject params, JSONObject result) {
-        QueryWrapper<NodeLog> wrapper = new QueryWrapper<>();
-        String serialNo = fourTuple.getSerialNo();
-        Integer version = fourTuple.getVersion();
-        Integer runVersion = fourTuple.getRunVersion();
-        String nodeId = fourTuple.getNodeId();
-        wrapper.eq("serial_no", serialNo)
-                .eq("version", version)
-                .eq("run_version", runVersion)
-                .eq("node_id", nodeId);
-        NodeLog nodeLog = this.getOne(wrapper);
+        NodeLog nodeLog = this.get(fourTuple);
         if (nodeLog == null) {
-            nodeLog = NodeLog.builder()
-                    .serialNo(serialNo)
-                    .version(version)
-                    .runVersion(runVersion)
-                    .nodeId(nodeId)
-                    .status(status.toString())
-                    .build();
-            if (result != null) {
-                nodeLog.setResult(result.toJSONString());
-            }
-            if (params != null) {
-                nodeLog.setParams(params.toJSONString());
-            }
-            save(nodeLog);
+            nodeLog = buildNodeLog(fourTuple, status, params, result);
+            this.save(nodeLog);
         } else {
             nodeLog.setStatus(status.toString());
             nodeLog.setUpdatedAt(new Date());
@@ -96,14 +77,49 @@ public class NodeLogService extends ServiceImpl<NodeLogMapper, NodeLog> {
             }
     )
     public void updateStatus(FourTuple fourTuple, StatusEnum status) {
-        QueryWrapper<NodeLog> wrapper = new QueryWrapper<>();
-        wrapper.eq("serial_no", fourTuple.getSerialNo())
-                .eq("version", fourTuple.getVersion())
-                .eq("run_version", fourTuple.getRunVersion())
-                .eq("node_id", fourTuple.getNodeId());
-        NodeLog nodeLog = this.getOne(wrapper);
+        NodeLog nodeLog = this.get(fourTuple);
         nodeLog.setStatus(status.toString());
         nodeLog.setUpdatedAt(new Date());
         this.updateById(nodeLog);
+    }
+
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "nodeLog", key = "#fourTuple.serialNo + #fourTuple.version + #fourTuple.runVersion + #fourTuple.nodeId"),
+                    @CacheEvict(cacheNames = "nodeLogList", key = "#fourTuple.serialNo + #fourTuple.version + #fourTuple.runVersion")
+            }
+    )
+    public boolean setPending(FourTuple fourTuple) {
+        synchronized (fourTuple.getSerialNo().intern()) {
+            NodeLog nodeLog = this.get(fourTuple);
+            if (nodeLog == null) {
+                nodeLog = buildNodeLog(fourTuple, StatusEnum.PENDING, null, null);
+                this.save(nodeLog);
+                return true;
+            }
+            if (StatusEnum.BLOCK.toString().equals(nodeLog.getStatus())) {
+                updateStatus(fourTuple, StatusEnum.PENDING);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private NodeLog buildNodeLog(FourTuple fourTuple, StatusEnum statusEnum, JSONObject params, JSONObject result) {
+        NodeLog nodeLog = NodeLog.builder()
+                .serialNo(fourTuple.getSerialNo())
+                .version(fourTuple.getVersion())
+                .runVersion(fourTuple.getRunVersion())
+                .nodeId(fourTuple.getNodeId())
+                .status(statusEnum.toString())
+                .build();
+        if (params != null) {
+            nodeLog.setParams(params.toJSONString());
+        }
+        if (result != null) {
+            nodeLog.setResult(result.toJSONString());
+        }
+        return nodeLog;
     }
 }

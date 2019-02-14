@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ladtor.workflow.bo.GraphBo;
 import com.ladtor.workflow.bo.Node;
 import com.ladtor.workflow.bo.WorkFlowBo;
-import com.ladtor.workflow.bo.domain.ExecuteLog;
 import com.ladtor.workflow.bo.domain.WorkFlow;
 import com.ladtor.workflow.bo.execute.FourTuple;
+import com.ladtor.workflow.bo.execute.ThreeTuple;
 import com.ladtor.workflow.bo.req.GraphReq;
 import com.ladtor.workflow.bo.resp.WorkFlowResp;
 import com.ladtor.workflow.constant.StatusEnum;
@@ -97,7 +97,7 @@ public class WorkFlowService extends ServiceImpl<WorkFlowMapper, WorkFlow> {
         return this.getOne(workFlowWrapper);
     }
 
-    @CacheEvict(key = "#workFlow.serialNo")
+    @CacheEvict(key = "#workFlow.serialNo", beforeInvocation = true)
     public void update(WorkFlow workFlow) {
         this.updateById(workFlow);
     }
@@ -134,13 +134,7 @@ public class WorkFlowService extends ServiceImpl<WorkFlowMapper, WorkFlow> {
         workFlow.setHasBeenRun(true);
         workFlow.setUpdatedAt(new Date());
         this.update(workFlow);
-        executeLogService.save(ExecuteLog.builder()
-                .serialNo(serialNo)
-                .version(version)
-                .runVersion(workFlow.getRunVersion())
-                .status(StatusEnum.RUNNING.toString())
-                .params(params.toJSONString())
-                .build());
+        executeLogService.save(new ThreeTuple(serialNo, version, workFlow.getRunVersion()), StatusEnum.RUNNING, params, null);
         return workFlow.getRunVersion();
     }
 }

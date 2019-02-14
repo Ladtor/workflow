@@ -1,6 +1,7 @@
 package com.ladtor.workflow.bo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ladtor.workflow.bo.domain.NodeLog;
 import com.ladtor.workflow.bo.execute.*;
@@ -44,6 +45,9 @@ public class Node {
                 break;
             case TASK:
                 executeInfo = extra.toJavaObject(TaskExecuteInfo.class);
+                JSONArray task = extra.getJSONArray("task");
+                ((TaskExecuteInfo) executeInfo).setTaskNodeKey(task.get(0).toString());
+                ((TaskExecuteInfo) executeInfo).setTaskKey(task.get(1).toString());
                 break;
             case HTTP:
                 executeInfo = extra.toJavaObject(HttpExecuteInfo.class);

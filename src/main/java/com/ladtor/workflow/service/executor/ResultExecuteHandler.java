@@ -5,7 +5,9 @@ import com.ladtor.workflow.bo.WorkFlowBo;
 import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.FourTuple;
 import com.ladtor.workflow.bo.execute.ResultExecuteInfo;
+import com.ladtor.workflow.constant.StatusEnum;
 import com.ladtor.workflow.service.ExecuteLogService;
+import com.ladtor.workflow.service.NodeLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class ResultExecuteHandler extends AbstractExecutorHandler<ResultExecuteI
     @Autowired
     private ExecuteLogService executeLogService;
 
+    @Autowired
+    private NodeLogService nodeLogService;
+
     public ResultExecuteHandler() {
         super(NAME);
     }
@@ -40,6 +45,8 @@ public class ResultExecuteHandler extends AbstractExecutorHandler<ResultExecuteI
             JSONObject result = collectSourceResult(workFlow, fourTuple);
             ExecuteResult executeResult = buildExecuteResult(executeInfo, result);
             executor.success(executeResult);
+        } else {
+            nodeLogService.updateStatus(fourTuple, StatusEnum.BLOCK);
         }
     }
 

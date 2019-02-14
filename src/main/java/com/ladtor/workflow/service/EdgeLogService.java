@@ -51,23 +51,26 @@ public class EdgeLogService extends ServiceImpl<EdgeLogMapper, EdgeLog> {
             }
     )
     public void saveOrUpdate(ThreeTuple threeTuple, String edgeId, String source, String target, boolean result, JSONObject params) {
-        EdgeLog edgeLog = this.get(threeTuple, edgeId);
-        if (edgeLog == null) {
-            this.save(EdgeLog.builder()
-                    .serialNo(threeTuple.getSerialNo())
-                    .version(threeTuple.getVersion())
-                    .runVersion(threeTuple.getRunVersion())
-                    .edgeId(edgeId)
-                    .source(source)
-                    .target(target)
-                    .result(result)
-                    .params(params.toJSONString())
-                    .build());
-        } else {
-            edgeLog.setResult(result);
-            edgeLog.setParams(params.toJSONString());
-            edgeLog.setUpdatedAt(new Date());
-            this.updateById(edgeLog);
+        synchronized (threeTuple.getSerialNo().intern()) {
+            EdgeLog edgeLog = this.get(threeTuple, edgeId);
+            if (edgeLog == null) {
+                edgeLog = EdgeLog.builder()
+                        .serialNo(threeTuple.getSerialNo())
+                        .version(threeTuple.getVersion())
+                        .runVersion(threeTuple.getRunVersion())
+                        .edgeId(edgeId)
+                        .source(source)
+                        .target(target)
+                        .result(result)
+                        .params(params.toJSONString())
+                        .build();
+                this.save(edgeLog);
+            } else {
+                edgeLog.setResult(result);
+                edgeLog.setParams(params.toJSONString());
+                edgeLog.setUpdatedAt(new Date());
+                this.updateById(edgeLog);
+            }
         }
     }
 }

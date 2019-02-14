@@ -9,10 +9,8 @@ import com.ladtor.workflow.bo.domain.NodeLog;
 import com.ladtor.workflow.bo.execute.ExecuteInfo;
 import com.ladtor.workflow.bo.execute.ExecuteResult;
 import com.ladtor.workflow.bo.execute.FourTuple;
-import com.ladtor.workflow.constant.NodeType;
 import com.ladtor.workflow.service.NodeLogService;
 import com.ladtor.workflow.service.WorkFlowService;
-import com.ladtor.workflow.service.chain.NodeCheckHandler;
 import com.ladtor.workflow.service.executor.Executor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +31,6 @@ public class GraphExecutorListener implements ExecutorListener {
 
     @Autowired
     private Executor executor;
-
-    @Autowired
-    private NodeCheckHandler nodeCheckHandler;
 
     @Override
     public void before(String executorName, ExecuteInfo executeInfo) {
@@ -62,18 +57,9 @@ public class GraphExecutorListener implements ExecutorListener {
                 Node targetNode = graph.getTargetNode(sourceEdge);
                 ExecuteInfo targetNodeExecuteInfo = targetNode.getExecuteInfo(fourTuple);
                 targetNodeExecuteInfo.getParams().putAll(executeResult.getResult());
-                if(canRun(targetNode, targetNodeExecuteInfo)){
-                    executor.execute(targetNodeExecuteInfo);
-                }
+                executor.execute(targetNodeExecuteInfo);
             }
         }
-    }
-
-    private boolean canRun(Node node, ExecuteInfo executeInfo) {
-        if (node.getNodeType().equals(NodeType.AND) || node.getNodeType().equals(NodeType.RESULT)) {
-            return true;
-        }
-        return nodeCheckHandler.canRun(new FourTuple(executeInfo.getFourTuple(), node.getId()));
     }
 
     @Override

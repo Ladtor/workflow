@@ -17,7 +17,6 @@ import com.ladtor.workflow.service.WorkFlowService;
 import com.ladtor.workflow.service.executor.Executor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/workflow")
-@EnableWebMvc
 public class WorkFlowController {
 
     @Autowired

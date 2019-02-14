@@ -26,7 +26,7 @@ public class ExecuteLogService extends ServiceImpl<ExecuteLogMapper, ExecuteLog>
     @Cacheable(cacheNames = "executeLogList", key = "#serialNo")
     public List<ExecuteLog> listBySerialNo(String serialNo) {
         QueryWrapper<ExecuteLog> wrapper = new QueryWrapper<>();
-        wrapper.eq("serial_no", serialNo).orderByDesc("updated_at");
+        wrapper.eq("serial_no", serialNo).orderByDesc("id");
         return this.list(wrapper);
     }
 
@@ -67,5 +67,27 @@ public class ExecuteLogService extends ServiceImpl<ExecuteLogMapper, ExecuteLog>
                 .eq("version", threeTuple.getVersion())
                 .eq("run_version", threeTuple.getRunVersion());
         return getOne(wrapper);
+    }
+
+    @Caching(
+            evict = {
+                    @CacheEvict(cacheNames = "executeLogList", key = "#threeTuple.serialNo"),
+                    @CacheEvict(cacheNames = "executeLog", key = "#threeTuple.serialNo + #threeTuple.version + #threeTuple.runVersion", beforeInvocation = true)
+            }
+    )
+    public boolean save(ThreeTuple threeTuple, StatusEnum status, JSONObject params, JSONObject result) {
+        ExecuteLog executeLog = ExecuteLog.builder()
+                .serialNo(threeTuple.getSerialNo())
+                .version(threeTuple.getVersion())
+                .runVersion(threeTuple.getRunVersion())
+                .status(status.toString())
+                .build();
+        if (params != null) {
+            executeLog.setParams(params.toJSONString());
+        }
+        if (result != null) {
+            executeLog.setResult(result.toJSONString());
+        }
+        return this.save(executeLog);
     }
 }

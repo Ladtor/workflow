@@ -9,5 +9,7 @@ public enum StatusEnum {
     FAIL,
     SUCCESS,
     CANCEL,
+    PENDING,
+    BLOCK,
     ;
 }

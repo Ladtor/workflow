@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author liudongrong
  * @date 2019/1/12 21:15
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class ExecuteInfo {
+public abstract class ExecuteInfo implements Serializable {
     private FourTuple fourTuple;
     private NodeType nodeType;
     private JSONObject params;
