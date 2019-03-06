@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ladtor.workflow.dao.impl.mapper.NodeLogMapper">
+    <insert id="saveOrUpdate">
+        insert into workflow.node_log(serial_no, version, run_version, node_id, status, params, result)
+        values (#{serialNo},#{version},#{runVersion},#{nodeId},#{status},#{params},#{result})
+        on duplicate key update
+        serial_no = #{serialNo}, version = #{version}, run_version = #{runVersion}, node_id = #{nodeId}
+        <if test="status != null and status != ''">
+            ,status = #{status}
+        </if>
+        <if test="params != null and params != ''">
+            ,params = #{params}
+        </if>
+        <if test="result != null and result != ''">
+            ,result = #{result}
+        </if>
+    </insert>
+</mapper>
