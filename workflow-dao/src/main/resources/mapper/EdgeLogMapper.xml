@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ladtor.workflow.dao.impl.mapper.EdgeLogMapper">
+    <insert id="saveOrUpdate">
+        insert into workflow.edge_log(serial_no, version, run_version, edge_id, target, source, result, params)
+        values (#{serialNo},#{version},#{runVersion},#{edgeId},#{target},#{source},#{result},#{params})
+        on duplicate key update
+        serial_no = #{serialNo}, version = #{version}, run_version = #{runVersion}, edge_id = #{edgeId}
+                                <if test="target != null and target != ''">
+                                    ,target = #{target}
+                                </if>
+                                <if test="source != null and source != ''">
+                                    ,source = #{source}
+                                </if>
+                                <if test="result != null and result != ''">
+                                    ,result = #{result}
+                                </if>
+                                <if test="params != null and params != ''">
+                                    ,params = #{params}
+                                </if>
+    </insert>
+</mapper>
