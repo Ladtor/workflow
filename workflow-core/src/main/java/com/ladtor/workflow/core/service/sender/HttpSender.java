@@ -1,19 +1,17 @@
 package com.ladtor.workflow.core.service.sender;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ladtor.workflow.core.bo.Application;
 import com.ladtor.workflow.common.bo.FourTuple;
+import com.ladtor.workflow.core.bo.Application;
 import com.ladtor.workflow.core.exception.ClientException;
-import com.ladtor.workflow.core.service.HttpClientTemplate;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Random;
-
-import static com.ladtor.workflow.core.service.HttpClientTemplate.GET;
-import static com.ladtor.workflow.core.service.HttpClientTemplate.POST;
 
 /**
  * @author liudongrong
@@ -23,19 +21,22 @@ import static com.ladtor.workflow.core.service.HttpClientTemplate.POST;
 public class HttpSender implements Sender {
 
     public static final String TASK_EXECUTE_PATH = "task/execute";
-    private final HttpClientTemplate httpClientTemplate;
+    private final RestTemplate restTemplate;
     private AdminServerProperties adminServerProperties;
     private ServerProperties serverProperties;
 
-    public HttpSender(HttpClientTemplate httpClientTemplate, AdminServerProperties adminServerProperties, ServerProperties serverProperties) {
-        this.httpClientTemplate = httpClientTemplate;
+    public HttpSender(RestTemplate restTemplate, AdminServerProperties adminServerProperties, ServerProperties serverProperties) {
+        this.restTemplate = restTemplate;
         this.adminServerProperties = adminServerProperties;
         this.serverProperties = serverProperties;
     }
 
     @Override
     public JSONObject send(FourTuple fourTuple, String nodeKey, String taskKey, JSONObject params) {
-        return httpClientTemplate.execute(POST, getUrl(nodeKey, taskKey, fourTuple), params);
+        String url = getUrl(nodeKey, taskKey, fourTuple);
+        JSONObject jsonObject = restTemplate.postForObject(url, params, JSONObject.class);
+        return jsonObject;
+//        return httpClientTemplate.execute(POST, url, params);
     }
 
     private String getUrl(String nodeKey, String taskKey, FourTuple fourTuple) {
@@ -48,10 +49,17 @@ public class HttpSender implements Sender {
             port = serverProperties.getPort();
         }
         String adminContextPath = adminServerProperties.getContextPath();
-        JSONObject jsonObject = httpClientTemplate.execute(GET, String.format("http://%s:%d%s/applications/%s", address, port, adminContextPath, nodeKey));
+        String url = String.format("http://%s:%d%s/applications/%s", address, port, adminContextPath, nodeKey);
+        JSONObject jsonObject;
+        try {
+            jsonObject = restTemplate.getForObject(url, JSONObject.class);
+        } catch (HttpClientErrorException e) {
+            throw new ClientException("节点错误");
+        }
+//        JSONObject jsonObject = httpClientTemplate.execute(GET, String.format("http://%s:%d%s/applications/%s", address, port, adminContextPath, nodeKey));
         Application application = jsonObject.toJavaObject(Application.class);
         if (CollectionUtils.isEmpty(application.getInstances())) {
-            throw new ClientException("节点错误");
+            throw new ClientException("找不到该节点");
         }
         int i = new Random().nextInt(application.getInstances().size());
         Application.Instance instance = application.getInstances().get(i);

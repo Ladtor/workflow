@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CronTriggerInfo extends TriggerInfo {
+public class CronTriggerInfo extends BaseTriggerInfo {
     private String cronText;
     private Integer times;
 }

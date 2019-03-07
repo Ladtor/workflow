@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class TriggerInfo {
+public abstract class BaseTriggerInfo {
     private TriggerType triggerType;
 }

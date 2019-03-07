@@ -3,11 +3,15 @@ package com.ladtor.workflow.core.service.executor;
 import com.alibaba.fastjson.JSONObject;
 import com.ladtor.workflow.core.bo.execute.ExecuteResult;
 import com.ladtor.workflow.core.bo.execute.HttpExecuteInfo;
-import com.ladtor.workflow.core.exception.HttpClientException;
-import com.ladtor.workflow.core.service.HttpClientTemplate;
+import com.ladtor.workflow.core.exception.ClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 /**
  * @author liudongrong
@@ -18,7 +22,7 @@ import org.springframework.stereotype.Service;
 class HttpExecutorHandler extends AbstractExecutorHandler<HttpExecuteInfo> {
 
     @Autowired
-    private HttpClientTemplate httpClientTemplate;
+    private RestTemplate restTemplate;
 
     @Autowired
     private Executor executor;
@@ -49,21 +53,40 @@ class HttpExecutorHandler extends AbstractExecutorHandler<HttpExecuteInfo> {
 
     @Override
     protected void doExecute(HttpExecuteInfo executeInfo) {
+        String errorMessage = null;
+        JSONObject params = executeInfo.getParams();
+        String method = executeInfo.getMethod();
+        String url = executeInfo.getUrl() + queryString(params);
         try {
-            JSONObject result = httpClientTemplate.execute(executeInfo.getMethod(), executeInfo.getUrl(), executeInfo.getParams());
-            ExecuteResult executeResult = buildExecuteResult(executeInfo, result);
-            if(result.getInteger(HttpClientTemplate.STATUS_CODE) < 400){
-                executor.success(executeResult);
-            }else {
-                executor.fail(executeResult);
+            JSONObject result = null;
+            if (HttpMethod.GET.matches(method)) {
+                result = restTemplate.getForObject(url, JSONObject.class, params);
+            } else if (HttpMethod.POST.matches(method)) {
+                result = restTemplate.postForObject(url, params, JSONObject.class, params);
             }
-        } catch (HttpClientException e) {
-            log.warn("curl fail {}", executeInfo.getUrl(), e);
+//            JSONObject result = httpClientTemplate.execute(method, executeInfo.getUrl(), params);
+            ExecuteResult executeResult = buildExecuteResult(executeInfo, result);
+            executor.success(executeResult);
+        } catch (ClientException e) {
+            errorMessage = e.getMessage();
+        } catch (RestClientException e) {
+            log.warn("curl fail {}", url, e);
+            errorMessage = e.getClass().getSimpleName();
+        }
+        if (errorMessage != null) {
             JSONObject result = new JSONObject();
-            result.put("message", e.getMessage());
+            result.put("message", errorMessage);
             ExecuteResult executeResult = buildExecuteResult(executeInfo, result);
             executor.fail(executeResult);
         }
+    }
+
+    private String queryString(JSONObject params) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            sb.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        return sb.length() == 0 ? "" : "?" + sb.toString().substring(1);
     }
 
     @Override
