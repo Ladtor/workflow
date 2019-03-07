@@ -36,7 +36,6 @@ public class HttpSender implements Sender {
         String url = getUrl(nodeKey, taskKey, fourTuple);
         JSONObject jsonObject = restTemplate.postForObject(url, params, JSONObject.class);
         return jsonObject;
-//        return httpClientTemplate.execute(POST, url, params);
     }
 
     private String getUrl(String nodeKey, String taskKey, FourTuple fourTuple) {
@@ -56,7 +55,6 @@ public class HttpSender implements Sender {
         } catch (HttpClientErrorException e) {
             throw new ClientException("节点错误");
         }
-//        JSONObject jsonObject = httpClientTemplate.execute(GET, String.format("http://%s:%d%s/applications/%s", address, port, adminContextPath, nodeKey));
         Application application = jsonObject.toJavaObject(Application.class);
         if (CollectionUtils.isEmpty(application.getInstances())) {
             throw new ClientException("找不到该节点");

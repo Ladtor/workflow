@@ -23,7 +23,6 @@ public class Graph {
     private Integer version;
     private List<JSONObject> nodes;
     private List<JSONObject> edges;
-//    private String data;
     private Date createdAt;
     private Date updatedAt;
 }
