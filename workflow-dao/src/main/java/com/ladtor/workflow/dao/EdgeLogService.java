@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface EdgeLogService{
 
+    EdgeLog get(ThreeTuple threeTuple, String edgeId);
+
     List<EdgeLog> list(ThreeTuple threeTuple);
 
     boolean saveOrUpdate(EdgeLog edgeLog);

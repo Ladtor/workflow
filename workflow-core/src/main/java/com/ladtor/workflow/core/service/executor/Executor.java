@@ -108,7 +108,7 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
                 .withIdentity(getTriggerKey(executeInfo))
                 .withSchedule(SimpleScheduleBuilder
                         .simpleSchedule()
-                        .withIntervalInSeconds(5)
+                        .withIntervalInSeconds(20)
 //                        .withRepeatCount(executeInfo.getFourTuple().getNodeId().equals("ffffffff") ? 0 : 10)
                 )
                 .startNow()
