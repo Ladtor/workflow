@@ -71,26 +71,19 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
     @Override
     public boolean cancel(ExecuteInfo executeInfo) {
         ExecutorHandler executorHandler = ExecutorFactory.getExecutorHandler(executeInfo.getNodeType());
-        if (executorHandler != null) {
-            return executorHandler.cancel(executeInfo);
-        }
-        return false;
+        return executorHandler.cancel(executeInfo);
     }
 
     @Override
     public void success(ExecuteResult executeResult) {
         ExecutorHandler executorHandler = ExecutorFactory.getExecutorHandler(executeResult.getNodeType());
-        if (executorHandler != null) {
-            executorHandler.success(executeResult);
-        }
+        executorHandler.success(executeResult);
     }
 
     @Override
     public void fail(ExecuteResult executeResult) {
         ExecutorHandler executorHandler = ExecutorFactory.getExecutorHandler(executeResult.getNodeType());
-        if (executorHandler != null) {
-            executorHandler.fail(executeResult);
-        }
+        executorHandler.fail(executeResult);
     }
 
     private JobDetail getJobDetail(ExecuteInfo executeInfo) {

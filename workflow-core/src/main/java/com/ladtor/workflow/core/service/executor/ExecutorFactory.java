@@ -4,6 +4,7 @@ import com.ladtor.workflow.core.bo.Node;
 import com.ladtor.workflow.common.constant.NodeType;
 import com.ladtor.workflow.core.bo.execute.ExecuteInfo;
 import com.ladtor.workflow.common.bo.FourTuple;
+import com.ladtor.workflow.core.exception.NotSuchExecutorException;
 import com.ladtor.workflow.core.service.wrapper.WorkFlowWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,7 @@ public class ExecutorFactory implements ApplicationContextAware {
             case AND:
                 return applicationContext.getBean(AndExecuteHandler.class);
         }
-        return null;
+        throw new NotSuchExecutorException(nodeType.toString());
     }
 
     public static ExecuteInfo getExecuteInfo(FourTuple fourTuple) {
