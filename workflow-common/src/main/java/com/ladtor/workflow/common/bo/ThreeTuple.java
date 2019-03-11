@@ -1,12 +1,14 @@
 package com.ladtor.workflow.common.bo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author liudongrong
  * @date 2019/1/31 19:01
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ThreeTuple extends TwoTuple {
     private Integer runVersion;
 

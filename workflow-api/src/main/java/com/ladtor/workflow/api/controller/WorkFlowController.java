@@ -43,8 +43,7 @@ public class WorkFlowController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String save(@RequestBody WorkFlowReq workFlowReq) {
-        String serialNo = workFlowWrapper.save(workFlowReq.getName(), workFlowReq.getGraph().getNodes(), workFlowReq.getGraph().getEdges());
-        return serialNo;
+        return workFlowWrapper.save(workFlowReq.getName(), workFlowReq.getGraph().getNodes(), workFlowReq.getGraph().getEdges());
     }
 
     @RequestMapping(value = "/execute/{serialNo}", method = RequestMethod.POST)

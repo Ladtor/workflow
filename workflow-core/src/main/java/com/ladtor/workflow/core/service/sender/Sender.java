@@ -8,5 +8,5 @@ import com.ladtor.workflow.common.bo.FourTuple;
  * @date 2019/2/6 11:48
  */
 public interface Sender {
-    public JSONObject send(FourTuple fourTuple, String nodeKey, String taskKey, JSONObject params);
+    JSONObject send(FourTuple fourTuple, String nodeKey, String taskKey, JSONObject params);
 }
