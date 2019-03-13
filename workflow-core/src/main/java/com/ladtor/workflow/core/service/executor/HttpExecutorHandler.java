@@ -72,6 +72,9 @@ class HttpExecutorHandler extends AbstractExecutorHandler<HttpExecuteInfo> {
         } catch (RestClientException e) {
             log.warn("curl fail {}", url, e);
             errorMessage = e.getClass().getSimpleName();
+        } catch (Exception e) {
+            log.error("curl fail {}", url, e);
+            errorMessage = e.getMessage();
         }
         if (errorMessage != null) {
             JSONObject result = new JSONObject();

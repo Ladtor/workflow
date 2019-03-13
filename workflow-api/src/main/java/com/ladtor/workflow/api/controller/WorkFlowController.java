@@ -13,6 +13,7 @@ import com.ladtor.workflow.dao.*;
 import com.ladtor.workflow.dao.domain.ExecuteLog;
 import com.ladtor.workflow.dao.domain.Graph;
 import com.ladtor.workflow.dao.domain.WorkFlow;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +53,17 @@ public class WorkFlowController {
         return serialNo;
     }
 
+    @RequestMapping(value = "/cron/{serialNo}}", method = RequestMethod.POST)
+    public String execute(@PathVariable String serialNo, @RequestBody String cron) throws SchedulerException {
+        executor.execute(serialNo, cron);
+        return serialNo;
+    }
+
+    @RequestMapping(value = "/cron/{serialNo}", method = RequestMethod.DELETE)
+    public void cancel(@PathVariable String serialNo) throws SchedulerException {
+        executor.cancel(serialNo);
+    }
+
     @RequestMapping(value = "/executeLog/{serialNo}", method = RequestMethod.GET)
     public List<ExecuteLog> executeLogs(@PathVariable String serialNo) {
         return executeLogService.listBySerialNo(serialNo);
@@ -70,8 +82,7 @@ public class WorkFlowController {
 
     @RequestMapping(value = "/{serialNo}/{version}",method = RequestMethod.GET)
     public WorkFlowResp get(@PathVariable String serialNo, @PathVariable Integer version) {
-        WorkFlowResp workFlowResp = this.getWorkFlowResp(serialNo, version);
-        return workFlowResp;
+        return this.getWorkFlowResp(serialNo, version);
     }
 
     @RequestMapping(value = "/{serialNo}", method = RequestMethod.GET)

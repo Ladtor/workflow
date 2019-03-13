@@ -6,7 +6,6 @@ import com.ladtor.workflow.core.service.executor.ExecutorHandler;
 import lombok.Setter;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 /**
  * @author liudongrong
@@ -19,15 +18,8 @@ public class ExecuteJob implements Job {
     private ExecuteInfo executeInfo;
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         ExecutorHandler executorHandler = ExecutorFactory.getExecutorHandler(executeInfo.getNodeType());
-        if (executorHandler != null) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            executorHandler.execute(executeInfo);
-        }
+        executorHandler.execute(executeInfo);
     }
 }

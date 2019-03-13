@@ -9,6 +9,7 @@ import com.ladtor.workflow.core.bo.execute.ExecuteInfo;
 import com.ladtor.workflow.core.bo.execute.ExecuteResult;
 import com.ladtor.workflow.core.bo.execute.StartExecuteInfo;
 import com.ladtor.workflow.core.service.quartz.ExecuteJob;
+import com.ladtor.workflow.core.service.quartz.WorkFlowJob;
 import com.ladtor.workflow.core.service.wrapper.NodeLogWrapper;
 import com.ladtor.workflow.core.service.wrapper.WorkFlowWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
     @Autowired
     private Scheduler scheduler;
 
-    public void execute(String serialNo, JSONObject params){
+    public void execute(String serialNo, JSONObject params) {
         WorkFlowBo workFlow = workFlowWrapper.getWorkFlow(serialNo);
         GraphBo graph = workFlow.getGraph();
         Node startNode = graph.getStartNode();
@@ -44,6 +45,33 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
         StartExecuteInfo startExecuteInfo = ((StartExecuteInfo) graph.getExecuteInfo(startNode, runVersion));
         startExecuteInfo.setInitParams(params);
         this.execute(startExecuteInfo);
+    }
+
+    public void execute(String serialNo, String cron) throws SchedulerException {
+        execute(serialNo, cron, null);
+    }
+
+    public void execute(String serialNo, String cron, JSONObject params) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(serialNo);
+        Trigger trigger = getCronTrigger(triggerKey, cron, params);
+        if (scheduler.checkExists(triggerKey)) {
+            scheduler.rescheduleJob(triggerKey, trigger);
+            scheduler.resumeTrigger(triggerKey);
+        }else {
+            scheduler.scheduleJob(JobBuilder
+                    .newJob(WorkFlowJob.class)
+                    .withIdentity(serialNo)
+                    .build(), trigger);
+        }
+    }
+
+    public void cancel(String serialNo) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(serialNo);
+        if (scheduler.checkExists(triggerKey)) {
+            scheduler.pauseTrigger(triggerKey);
+            scheduler.unscheduleJob(triggerKey);
+            scheduler.resumeTrigger(triggerKey);
+        }
     }
 
     @Override
@@ -100,11 +128,10 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
         return TriggerBuilder.newTrigger()
                 .withIdentity(getTriggerKey(executeInfo))
                 .withSchedule(SimpleScheduleBuilder
-                        .simpleSchedule()
-                        .withIntervalInSeconds(20)
-//                        .withRepeatCount(executeInfo.getFourTuple().getNodeId().equals("ffffffff") ? 0 : 10)
+                                .simpleSchedule()
+                                .withIntervalInSeconds(20)
+                                .withMisfireHandlingInstructionIgnoreMisfires()
                 )
-                .startNow()
                 .build();
     }
 
@@ -122,5 +149,18 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
     private JobKey getJobKey(ExecuteInfo executeInfo) {
         FourTuple fourTuple = executeInfo.getFourTuple();
         return JobKey.jobKey(fourTuple.getNodeId(), fourTuple.getSerialNo() + "-" + fourTuple.getVersion() + "-" + fourTuple.getRunVersion());
+    }
+
+    private Trigger getCronTrigger(TriggerKey triggerKey, String cron, JSONObject params) {
+        if (params == null) {
+            params = new JSONObject();
+        }
+        return TriggerBuilder.newTrigger()
+                .withIdentity(triggerKey)
+                .withSchedule(CronScheduleBuilder
+                        .cronSchedule(cron)
+                        .withMisfireHandlingInstructionIgnoreMisfires())
+                .usingJobData(new JobDataMap(params))
+                .build();
     }
 }
