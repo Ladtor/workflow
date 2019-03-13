@@ -65,13 +65,15 @@ public class Executor implements ExecutorHandler<ExecuteInfo> {
         }
     }
 
-    public void cancel(String serialNo) throws SchedulerException {
+    public boolean cancel(String serialNo) throws SchedulerException {
         TriggerKey triggerKey = new TriggerKey(serialNo);
         if (scheduler.checkExists(triggerKey)) {
             scheduler.pauseTrigger(triggerKey);
             scheduler.unscheduleJob(triggerKey);
             scheduler.resumeTrigger(triggerKey);
+            return true;
         }
+        return false;
     }
 
     @Override

@@ -22,8 +22,10 @@ public class WorkFlowServiceImpl extends ServiceImpl<WorkFlowMapper, WorkFlow> i
     }
 
     @Override
-    public boolean delete(Integer id) {
-        return super.removeById(id);
+    public boolean delete(String serialNo) {
+        QueryWrapper<WorkFlow> wrapper = new QueryWrapper<>();
+        wrapper.eq("serial_no", serialNo);
+        return super.remove(wrapper);
     }
 
     @Override

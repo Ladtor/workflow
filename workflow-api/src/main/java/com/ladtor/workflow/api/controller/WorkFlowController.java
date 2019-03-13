@@ -60,8 +60,8 @@ public class WorkFlowController {
     }
 
     @RequestMapping(value = "/cron/{serialNo}", method = RequestMethod.DELETE)
-    public void cancel(@PathVariable String serialNo) throws SchedulerException {
-        executor.cancel(serialNo);
+    public Boolean cancel(@PathVariable String serialNo) throws SchedulerException {
+        return executor.cancel(serialNo);
     }
 
     @RequestMapping(value = "/executeLog/{serialNo}", method = RequestMethod.GET)
@@ -110,9 +110,9 @@ public class WorkFlowController {
         return workFlowService.searchBySerialNoOrName(keywords);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public boolean delete(@PathVariable Integer id) {
-        return workFlowService.delete(id);
+    @RequestMapping(value = "/{serialNo}", method = RequestMethod.DELETE)
+    public boolean delete(@PathVariable String serialNo) {
+        return workFlowService.delete(serialNo);
     }
 
     public WorkFlowResp getWorkFlowResp(String serialNo, Integer version) {

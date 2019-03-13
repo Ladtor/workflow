@@ -16,7 +16,7 @@ public interface WorkFlowService {
 
     boolean save(WorkFlow workFlow);
 
-    boolean delete(Integer id);
+    boolean delete(String serialNo);
 
     List<WorkFlow> list();
 
