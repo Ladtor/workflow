@@ -65,4 +65,10 @@ public class MyBatisPlusConfig {
     public WorkFlowService workFlowService(){
         return new WorkFlowServiceImpl();
     }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskApplicationService.class)
+    public TaskApplicationService taskApplicationService(){
+        return new TaskApplicationServiceImpl();
+    }
 }
