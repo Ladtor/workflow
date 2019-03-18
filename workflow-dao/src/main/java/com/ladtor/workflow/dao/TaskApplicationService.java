@@ -8,4 +8,6 @@ public interface TaskApplicationService {
     boolean save(TaskApplication taskApplication);
 
     List<TaskApplication> list();
+
+    TaskApplication get(String name);
 }

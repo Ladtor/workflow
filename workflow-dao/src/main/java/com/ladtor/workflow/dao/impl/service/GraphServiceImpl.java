@@ -34,6 +34,9 @@ public class GraphServiceImpl extends ServiceImpl<GraphMapper, GraphDb> implemen
 
 
     private Graph convert(GraphDb graphDb){
+        if (graphDb == null) {
+            return null;
+        }
         Graph graph = JSON.parseObject(graphDb.getData(), Graph.class);
         graph.setId(graphDb.getId());
         graph.setSerialNo(graphDb.getSerialNo());
@@ -44,6 +47,9 @@ public class GraphServiceImpl extends ServiceImpl<GraphMapper, GraphDb> implemen
     }
 
     private GraphDb convert(Graph graph){
+        if (graph == null) {
+            return null;
+        }
         return GraphDb.builder()
                 .id(graph.getId())
                 .serialNo(graph.getSerialNo())

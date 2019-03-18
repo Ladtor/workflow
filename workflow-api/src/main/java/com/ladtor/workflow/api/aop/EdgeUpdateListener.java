@@ -10,7 +10,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-@EnableAspectJAutoProxy
 @Component
 @Aspect
 public class EdgeUpdateListener {
