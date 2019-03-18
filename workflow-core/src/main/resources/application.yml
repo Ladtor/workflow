@@ -9,6 +9,7 @@ spring:
   jackson:
     date-format:  'yyyy-MM-dd HH:mm:ss'
     time-zone:  GMT+8
+    default-property-inclusion: non_null
 
   quartz:
     #相关属性配置
@@ -40,9 +41,11 @@ mybatis-plus:
       id-type: auto
   mapper-locations: classpath*:/mapper/**/*.xml
 
-#logging:
-#  level:
-#    com.ladtor: debug
+logging:
+  level:
+    com.ladtor: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger %L - %msg%n'
 
 server:
   connection-timeout: 10000

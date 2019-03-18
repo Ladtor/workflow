@@ -1,5 +1,7 @@
 package com.ladtor.workflow.core.service.executor;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.ladtor.workflow.core.bo.execute.ExecuteResult;
 import com.ladtor.workflow.core.bo.execute.HttpExecuteInfo;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -69,6 +72,15 @@ class HttpExecutorHandler extends AbstractExecutorHandler<HttpExecuteInfo> {
             executor.success(executeResult);
         } catch (ClientException e) {
             errorMessage = e.getMessage();
+        } catch (RestClientResponseException e){
+            errorMessage = e.getResponseBodyAsString();
+            try {
+                JSONObject jsonObject = JSON.parseObject(errorMessage);
+                executor.fail(buildExecuteResult(executeInfo, jsonObject));
+                return;
+            }catch (JSONException ignored){
+
+            }
         } catch (RestClientException e) {
             log.warn("curl fail {}", url, e);
             errorMessage = e.getClass().getSimpleName();
