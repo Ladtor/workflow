@@ -2,6 +2,7 @@ package com.ladtor.workflow.core.service.executor.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.ladtor.workflow.common.bo.FourTuple;
+import com.ladtor.workflow.common.constant.NodeType;
 import com.ladtor.workflow.core.bo.Edge;
 import com.ladtor.workflow.core.bo.GraphBo;
 import com.ladtor.workflow.core.bo.Node;
@@ -55,6 +56,9 @@ public class GraphExecutorListener implements ExecutorListener {
         for (Edge sourceEdge : sourceEdges) {
             if(sourceEdge.run(fourTuple, executeResult.getResult())){
                 Node targetNode = graph.getTargetNode(sourceEdge);
+                if (NodeType.MANUAL.equals(targetNode.getNodeType())) {
+                    continue;
+                }
                 ExecuteInfo targetNodeExecuteInfo = targetNode.getExecuteInfo(fourTuple);
                 targetNodeExecuteInfo.getParams().putAll(executeResult.getResult());
                 executor.execute(targetNodeExecuteInfo);

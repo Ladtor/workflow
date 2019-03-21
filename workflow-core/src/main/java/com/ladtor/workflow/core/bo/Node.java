@@ -63,6 +63,9 @@ public class Node {
             case AND:
                 executeInfo = extra.toJavaObject(AndExecuteInfo.class);
                 break;
+            case MANUAL:
+                executeInfo = extra.toJavaObject(ManualExecuteInfo.class);
+                break;
         }
         if (executeInfo != null) {
             executeInfo.setNodeType(this.getNodeType());

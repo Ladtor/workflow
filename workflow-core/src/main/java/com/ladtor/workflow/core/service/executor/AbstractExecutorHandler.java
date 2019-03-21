@@ -95,8 +95,12 @@ public abstract class AbstractExecutorHandler<T extends ExecuteInfo> implements 
         List<Edge> targetEdges = graph.getTargetEdges(node);
         for (Edge targetEdge : targetEdges) {
             Node sourceNode = graph.getSourceNode(targetEdge);
-            JSONObject nodeExecuteResult = sourceNode.getExecuteResult(fourTuple);
-            result.putAll(nodeExecuteResult);
+            if (sourceNode.isReady(fourTuple)) {
+                JSONObject nodeExecuteResult = sourceNode.getExecuteResult(fourTuple);
+                if (targetEdge.run(fourTuple, nodeExecuteResult)) {
+                    result.putAll(nodeExecuteResult);
+                }
+            }
         }
         return result;
     }

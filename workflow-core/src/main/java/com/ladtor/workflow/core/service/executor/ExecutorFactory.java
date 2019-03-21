@@ -36,6 +36,8 @@ public class ExecutorFactory implements ApplicationContextAware {
                 return applicationContext.getBean(OrExecuteHandler.class);
             case AND:
                 return applicationContext.getBean(AndExecuteHandler.class);
+            case MANUAL:
+                return applicationContext.getBean(ManualExecuteHandler.class);
         }
         throw new NotSuchExecutorException(nodeType.toString());
     }
