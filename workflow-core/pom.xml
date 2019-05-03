@@ -35,9 +35,5 @@
             <groupId>com.ladtor</groupId>
             <artifactId>workflow-dao</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.ladtor</groupId>
-            <artifactId>workflow-common</artifactId>
-        </dependency>
     </dependencies>
 </project>
